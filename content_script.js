@@ -1,3 +1,22 @@
+var settings = {};
+var url = null;
+
+chrome.storage.sync.get(null, function(items) {
+    for (var item in items) {
+        settings[item] = items[item];
+    }
+});
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (var key in changes) {
+        settings[key] = changes[key].newValue;
+        console.log(settings);
+        if (key == "settings-time") {
+            toggleTimeBox(changes[key].newValue);
+        }
+    }
+});
+
 // https://stackoverflow.com/a/13368349
 function formatTime(s) {
     seconds = Math.floor(s),
@@ -10,6 +29,15 @@ function formatTime(s) {
     if (minutes < 10) { minutes = "0" + minutes; }
     if (seconds < 10) { seconds = "0" + seconds; }
     return hours + ':' + minutes + ':' + seconds;
+}
+
+function toggleTimeBox(display) {
+    var timeBox = document.getElementById("timeDisplayContainer");
+    if (display == "true") {
+        timeBox.style.display = "block";
+    } else {
+        timeBox.style.display = "none";
+    }
 }
 
 function createWorkingArea() {
@@ -27,51 +55,52 @@ function createWorkingArea() {
     containerDiv.appendChild(timeDisplay);
 
     document.getElementsByClassName('AkiraPlayer')[0].appendChild(containerDiv);
+
+    toggleTimeBox(settings['settings-time']);
 }
 
 function displayTime(currentTime, videoLength) {
     var width = Math.floor(currentTime / videoLength * 100);
-    document.getElementById("timeBar").style.width = width + "%";
-    document.getElementById("timeDisplay").innerHTML = formatTime(currentTime) + ' / ' + formatTime(videoLength);
+    var timebar = document.getElementById("timeBar");
+    var timeDisplay = document.getElementById("timeDisplay");
+    if (timebar) document.getElementById("timeBar").style.width = width + "%";
+    if (timeDisplay) document.getElementById("timeDisplay").innerHTML = formatTime(currentTime) + ' / ' + formatTime(videoLength);
 }
 
-var settings = {};
-chrome.storage.sync.get(null, function(items) {
-    for (var item in items) {
-        settings[item] = items[item];
-    }
-});
-console.log(settings);
-
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    for (var key in changes) {
-        settings[key] = changes[key].newValue;
-        console.log(settings);
-    }
-});
 
 // https://stackoverflow.com/questions/41985502/how-to-interact-with-netflix-cadmium-video-player-on-the-client
-var url = window.location.pathname.split("/");
+function launchBingeWatchPRO(url) {
+    url = url.split("/");
 
-if (url[1] == "watch") {
-    var videoId = url[2];
-    var checkExist = setInterval(function() {
-        if (document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext() !== null) {
-            clearInterval(checkExist);
-            createWorkingArea();
-            var video = document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext();
+    if (url[1] == "watch") {
+        var videoId = url[2];
+        var checkExist = setInterval(function() {
+            if (document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext() !== null) {
+                clearInterval(checkExist);
+                createWorkingArea();
+                var video = document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext();
 
-            video.addEventListener("timeupdate",
-                function(e) {
-                    displayTime(video.currentTime, video.duration);
-                    if (document.getElementsByClassName("skip-credits").length && settings['settings-skip'] == 'true') {
-                        document.getElementsByClassName("nf-icon-button nf-flat-button nf-flat-button-uppercase no-icon")[0].click();
+                video.addEventListener("timeupdate",
+                    function(e) {
+                        displayTime(video.currentTime, video.duration);
+                        if (document.getElementsByClassName("skip-credits").length && settings['settings-skip'] == 'true') {
+                            document.getElementsByClassName("nf-icon-button nf-flat-button nf-flat-button-uppercase no-icon")[0].click();
+                        }
+                        if (document.getElementsByClassName("main-hitzone-element-container").length && settings['settings-next'] == 'true') {
+                            document.getElementsByClassName("button-nfplayerNextEpisode")[0].click();
+                        }
                     }
-                    if (document.getElementsByClassName("main-hitzone-element-container").length && settings['settings-next'] == 'true') {
-                        document.getElementsByClassName("button-nfplayerNextEpisode")[0].click();
-                    }
-                }
-            );
-        }
-    }, 100); // check every 100ms
+                );
+            }
+        }, 100); // check every 100ms
+    }
 }
+
+var checkExist = setInterval(function() {
+    var tempUrl = window.location.pathname;
+    if (url != tempUrl) {
+        url = tempUrl;
+        launchBingeWatchPRO(url);
+    }
+
+}, 1000);
