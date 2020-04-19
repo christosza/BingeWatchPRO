@@ -92,7 +92,7 @@ function launchBingeWatchPRO(url) {
                     }
                 );
             }
-        }, 100); // check every 100ms
+        }, 100);
     }
 }
 

@@ -3,22 +3,46 @@
 
 <head>
     <title>Set Page Color Popup</title>
+    <link rel="stylesheet" type="text/css" href="pretty-checkbox.min.css">
     <style>
         body {
             overflow: hidden;
             margin: 0px;
-            padding: 0px;
+            padding: 15px;
             background: white;
             width: 250px;
+        }
+        
+        .pretty {
+            display: block;
+        }
+        
+        .pretty:not(:last-child) {
+            margin-bottom: 10px;
         }
     </style>
     <script src="popup.js"></script>
 </head>
 
 <body>
-    <p><input type="checkbox" id="settings-time"> show time</p>
-    <p><input type="checkbox" id="settings-skip"> skip intro</p>
-    <p><input type="checkbox" id="settings-next"> go to next episode</p>
+    <div class="pretty p-switch p-fill">
+        <input type="checkbox" id="settings-time">
+        <div class="state p-success">
+            <label>show time</label>
+        </div>
+    </div>
+    <div class="pretty p-switch p-fill">
+        <input type="checkbox" id="settings-skip">
+        <div class="state p-success">
+            <label>skip intro</label>
+        </div>
+    </div>
+    <div class="pretty p-switch p-fill">
+        <input type="checkbox" id="settings-next">
+        <div class="state p-success">
+            <label>next episode without delay</label>
+        </div>
+    </div>
 </body>
 
 </html>
