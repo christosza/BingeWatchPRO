@@ -1,6 +1,6 @@
 {
-    "name": "NetflixTimeElapsed",
-    "description": "Adds show elapsed time in top right corner of the screen and few additional, but useful, features.",
+    "name": "BingeWatchPRO",
+    "description": "Adds Netflix show elapsed time in top right corner of the screen and few additional, but useful, features.",
     "version": "1.0",
     "author": "christosza.czugaszwili",
     "permissions": [

@@ -8,16 +8,20 @@ window.addEventListener('change', function(e) {
 
         if (name.includes("settings")) {
             var state = e.target.checked.toString();
-            localStorage.setItem(name, state);
+            var setting = {};
+            setting[name] = state;
+            chrome.storage.sync.set(setting);
         }
     }
 });
 
 window.addEventListener("load", function() {
-    for (var a in localStorage) {
-        if (a.includes("settings")) {
-            var state = (localStorage[a] == "true") ? true : false;
-            document.getElementById(a).checked = state;
+    chrome.storage.sync.get(null, function(items) {
+        for (var item in items) {
+            if (item.includes("settings")) {
+                var state = (items[item] == "true") ? true : false;
+                document.getElementById(item).checked = state;
+            }
         }
-    }
+    });
 });

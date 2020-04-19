@@ -35,6 +35,21 @@ function displayTime(currentTime, videoLength) {
     document.getElementById("timeDisplay").innerHTML = formatTime(currentTime) + ' / ' + formatTime(videoLength);
 }
 
+var settings = {};
+chrome.storage.sync.get(null, function(items) {
+    for (var item in items) {
+        settings[item] = items[item];
+    }
+});
+console.log(settings);
+
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (var key in changes) {
+        settings[key] = changes[key].newValue;
+        console.log(settings);
+    }
+});
+
 // https://stackoverflow.com/questions/41985502/how-to-interact-with-netflix-cadmium-video-player-on-the-client
 var url = window.location.pathname.split("/");
 
@@ -49,9 +64,11 @@ if (url[1] == "watch") {
             video.addEventListener("timeupdate",
                 function(e) {
                     displayTime(video.currentTime, video.duration);
-
-                    if (document.getElementsByClassName("skip-credits").length) {
+                    if (document.getElementsByClassName("skip-credits").length && settings['settings-skip'] == 'true') {
                         document.getElementsByClassName("nf-icon-button nf-flat-button nf-flat-button-uppercase no-icon")[0].click();
+                    }
+                    if (document.getElementsByClassName("main-hitzone-element-container").length && settings['settings-next'] == 'true') {
+                        document.getElementsByClassName("button-nfplayerNextEpisode")[0].click();
                     }
                 }
             );
