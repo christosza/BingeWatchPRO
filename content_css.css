@@ -8,7 +8,7 @@
     font-weight: normal;
     color: #fff;
     background-color: #000;
-    padding: 5px;
+    padding: 5px 5px 3px 5px;
     text-align: center;
     font-size: 12px;
     font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -20,7 +20,7 @@
 }
 
 #timeBarContainer {
-    width: 100%;
+    width: auto;
     height: 6px;
     border: 1px #fff solid;
 }

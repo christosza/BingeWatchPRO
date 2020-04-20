@@ -13,7 +13,7 @@
         "default_popup": "popup.html"
     },
     "content_scripts": [{
-        "matches": ["https://www.netflix.com/watch/*"],
+        "matches": ["https://www.netflix.com/*"],
         "css": ["content_css.css"],
         "js": ["content_script.js"]
     }],
