@@ -1,13 +1,14 @@
 var settings = {};
 var url = null;
+var semaphore = 0;
 
-chrome.storage.sync.get(null, function(items) {
+chrome.storage.sync.get(null, function (items) {
     for (var item in items) {
         settings[item] = items[item];
     }
 });
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
+chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (var key in changes) {
         settings[key] = changes[key].newValue;
         console.log(settings);
@@ -74,20 +75,26 @@ function launchBingeWatchPRO(url) {
 
     if (url[1] == "watch") {
         var videoId = url[2];
-        var checkExist = setInterval(function() {
+        var checkExist = setInterval(function () {
             if (document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext() !== null) {
                 clearInterval(checkExist);
                 createWorkingArea();
                 var video = document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext();
 
                 video.addEventListener("timeupdate",
-                    function(e) {
+                    function (e) {
                         displayTime(video.currentTime, video.duration);
-                        if (document.getElementsByClassName("skip-credits").length && settings['settings-skip'] == 'true') {
+                        if (document.getElementsByClassName("skip-credits").length && settings['settings-skip'] == 'true' && !semaphore) {
                             document.getElementsByClassName("nf-icon-button nf-flat-button nf-flat-button-uppercase no-icon")[0].click();
-                        }
-                        if (document.getElementsByClassName("main-hitzone-element-container").length && settings['settings-next'] == 'true') {
+                            var semaphore = 1;
+                        } else if (document.getElementsByClassName("main-hitzone-element-container").length && settings['settings-next'] == 'true' && !semaphore) {
                             document.getElementsByClassName("button-nfplayerNextEpisode")[0].click();
+                            var semaphore = 1;
+                        } else if (document.getElementsByClassName("recap-lower").length && settings['settings-recap'] == 'true' && !semaphore) {
+                            document.getElementsByClassName("nf-icon-button nf-flat-button nf-flat-button-uppercase no-icon")[0].click();
+                            var semaphore = 1;
+                        } else {
+                            var semaphore = 0;
                         }
                     }
                 );
@@ -96,7 +103,9 @@ function launchBingeWatchPRO(url) {
     }
 }
 
-var checkExist = setInterval(function() {
+
+// TODO: .VideoContainer div video - sprawdzanie czy istnieje? nf-big-play-pause nf-big-play-pause-secondary play button click
+var checkExist = setInterval(function () {
     var tempUrl = window.location.pathname;
     if (url != tempUrl) {
         url = tempUrl;
