@@ -1,6 +1,5 @@
 var settings = {};
-var url = null;
-var semaphore = 0;
+var currentVideo = null;
 
 chrome.storage.sync.get(null, function (items) {
     for (var item in items) {
@@ -41,7 +40,18 @@ function toggleTimeBox(display) {
     }
 }
 
-function createWorkingArea() {
+function createWorkingArea(app) {
+    if (app == 'watch') {
+        var parent = document.getElementsByClassName('watch-video')[0];
+    } else {
+        var parent = document.evaluate('//*[@id="Viewport"]/div[2]/div[2]/div/div[1]/div[3]', document).iterateNext();
+    }
+    //remove previous display if exist
+    var child = document.getElementById('timeDisplayContainer');
+    if (child != undefined) {
+       parent.removeChild(child); 
+    }
+
     var containerDiv = document.createElement('div');
     containerDiv.setAttribute('id', 'timeDisplayContainer');
     var timeBarContainer = document.createElement('div');
@@ -55,7 +65,7 @@ function createWorkingArea() {
     containerDiv.appendChild(timeBarContainer);
     containerDiv.appendChild(timeDisplay);
 
-    document.getElementsByClassName('AkiraPlayer')[0].appendChild(containerDiv);
+    parent.appendChild(containerDiv);
 
     toggleTimeBox(settings['settings-time']);
 }
@@ -71,30 +81,36 @@ function displayTime(currentTime, videoLength) {
 
 // https://stackoverflow.com/questions/41985502/how-to-interact-with-netflix-cadmium-video-player-on-the-client
 function launchBingeWatchPRO(url) {
-    url = url.split("/");
+    console.log('launchBingeWatchPRO called');
+    var url = url.split("/");
 
-    if (url[1] == "watch") {
-        var videoId = url[2];
+    if (url[1] == "watch" || url[1] == "episode") {
         var checkExist = setInterval(function () {
-            if (document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext() !== null) {
+            if (document.evaluate('//*/video', document).iterateNext() !== null) {
                 clearInterval(checkExist);
-                createWorkingArea();
-                var video = document.evaluate('//*[@id="' + videoId + '"]/video', document).iterateNext();
-
+                createWorkingArea(url[1]);
+                var video = document.evaluate('//*/video', document).iterateNext();
+                video.timeupdate = true;
                 video.addEventListener("timeupdate",
                     function (e) {
                         displayTime(video.currentTime, video.duration);
-                        if (document.getElementsByClassName("skip-credits").length && settings['settings-skip'] == 'true' && !semaphore) {
-                            document.getElementsByClassName("nf-icon-button nf-flat-button nf-flat-button-uppercase no-icon")[0].click();
-                            var semaphore = 1;
-                        } else if (document.getElementsByClassName("main-hitzone-element-container").length && settings['settings-next'] == 'true' && !semaphore) {
-                            document.getElementsByClassName("button-nfplayerNextEpisode")[0].click();
-                            var semaphore = 1;
-                        } else if (document.getElementsByClassName("recap-lower").length && settings['settings-recap'] == 'true' && !semaphore) {
-                            document.getElementsByClassName("nf-icon-button nf-flat-button nf-flat-button-uppercase no-icon")[0].click();
-                            var semaphore = 1;
-                        } else {
-                            var semaphore = 0;
+                        console.log('tick');
+                        // skip intro
+                        if (document.querySelectorAll('[data-uia="player-skip-intro"]').length && settings['settings-skip'] == 'true') {
+                            document.querySelectorAll('[data-uia="player-skip-intro"]')[0].click();
+                            console.log('click player-skip-intro');
+                        } 
+
+                        // go to next episode without waiting
+                        if (document.querySelectorAll('[data-uia="next-episode-seamless-button-draining"]').length && settings['settings-next'] == 'true') {
+                            document.querySelectorAll('[data-uia="next-episode-seamless-button-draining"]')[0].click();
+                            console.log('click next-episode-seamless-button');
+                        }
+
+                        // skip recap
+                        if (document.querySelectorAll('[data-uia="player-skip-preplay"]').length && settings['settings-recap'] == 'true') {
+                            document.querySelectorAll('[data-uia="player-skip-preplay"]')[0].click();
+                            console.log('click player-skip-preplay');
                         }
                     }
                 );
@@ -104,12 +120,11 @@ function launchBingeWatchPRO(url) {
 }
 
 
-// TODO: .VideoContainer div video - sprawdzanie czy istnieje? nf-big-play-pause nf-big-play-pause-secondary play button click
 var checkExist = setInterval(function () {
     var tempUrl = window.location.pathname;
-    if (url != tempUrl) {
-        url = tempUrl;
-        launchBingeWatchPRO(url);
+    if (currentVideo != tempUrl || document.querySelector('video').timeupdate === undefined) {
+        currentVideo = tempUrl;
+        launchBingeWatchPRO(currentVideo);
     }
 
 }, 1000);

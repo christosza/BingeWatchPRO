@@ -3,6 +3,12 @@
     "description": "Adds Netflix show elapsed time in top right corner of the screen and few additional, but useful, features.",
     "version": "1.0",
     "author": "christosza.czugaszwili",
+    "icons": 
+    {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
     "permissions": [
         "activeTab",
         "storage"
@@ -13,7 +19,7 @@
         "default_popup": "popup.html"
     },
     "content_scripts": [{
-        "matches": ["https://www.netflix.com/*"],
+        "matches": ["https://www.netflix.com/*", "https://play.hbomax.com/*"],
         "css": ["content_css.css"],
         "js": ["content_script.js"]
     }],
