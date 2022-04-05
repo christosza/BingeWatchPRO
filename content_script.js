@@ -90,7 +90,7 @@ function launchBingeWatchPRO(url) {
                 clearInterval(checkExist);
                 createWorkingArea(url[1]);
                 var video = document.evaluate('//*/video', document).iterateNext();
-                video.timeupdate = true;
+                video.setAttribute("timeupdate", true);
                 video.addEventListener("timeupdate",
                     function (e) {
                         displayTime(video.currentTime, video.duration);
@@ -122,9 +122,14 @@ function launchBingeWatchPRO(url) {
 
 var checkExist = setInterval(function () {
     var tempUrl = window.location.pathname;
-    if (currentVideo != tempUrl || document.querySelector('video').timeupdate === undefined) {
-        currentVideo = tempUrl;
-        launchBingeWatchPRO(currentVideo);
+    
+    if (!document.querySelector('video')) {
+        return;
     }
 
+    if (currentVideo != tempUrl || !document.querySelector('video').hasAttribute('timeupdate')) {
+        currentVideo = tempUrl;
+        launchBingeWatchPRO(currentVideo);
+        return;
+    }
 }, 1000);
