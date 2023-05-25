@@ -1,7 +1,7 @@
 {
     "name": "BingeWatchPRO",
-    "description": "Adds Netflix show elapsed time in top right corner of the screen and few additional, but useful, features.",
-    "version": "1.0",
+    "description": "Adds Netflix show elapsed time in top right corner of the screen and few additional but useful features.",
+    "version": "1.1",
     "author": "christosza.czugaszwili",
     "icons": 
     {
@@ -19,7 +19,7 @@
         "default_popup": "popup.html"
     },
     "content_scripts": [{
-        "matches": ["https://www.netflix.com/*", "https://play.hbomax.com/*"],
+        "matches": ["https://www.netflix.com/*", "https://play.hbomax.com/*", "https://www.primevideo.com/detail/*"],
         "css": ["content_css.css"],
         "js": ["content_script.js"]
     }],

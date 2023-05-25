@@ -1,3 +1,6 @@
+// no debug outputs
+console.log = () => {};
+
 var settings = {};
 var currentVideo = null;
 
@@ -40,12 +43,8 @@ function toggleTimeBox(display) {
     }
 }
 
-function createWorkingArea(app) {
-    if (app == 'watch') {
-        var parent = document.getElementsByClassName('watch-video')[0];
-    } else {
-        var parent = document.evaluate('//*[@id="Viewport"]/div[2]/div[2]/div/div[1]/div[3]', document).iterateNext();
-    }
+function createWorkingArea(timerSelector) {
+    var parent = document.evaluate(timerSelector, document).iterateNext();
     //remove previous display if exist
     var child = document.getElementById('timeDisplayContainer');
     if (child != undefined) {
@@ -78,39 +77,69 @@ function displayTime(currentTime, videoLength) {
     if (timeDisplay) document.getElementById("timeDisplay").innerHTML = formatTime(currentTime) + ' / ' + formatTime(videoLength);
 }
 
+var selectors = {
+                    'netflix': {
+                        'video' : '//*/video',
+                        'intro' : '[data-uia="player-skip-intro"]',
+                        'next'  : '[data-uia="next-episode-seamless-button-draining"]',
+                        'recap' : '[data-uia="player-skip-preplay"]',
+                        'timer' : '//*[@class="watch-video"]'
+                    },
+                    'hbomax' : {
+                        'video' : '//*/video',
+                        'intro' : '[data-testid="SkipButton"]',
+                        'next'  : '[data-testid="UpNextButton"]',
+                        'recap' : '',
+                        'timer' : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]'
+                    },
+                    'primevideo' : {
+                        'video' : '//*/video',
+                        'intro' : '.atvwebplayersdk-skipelement-button',
+                        'next'  : '.atvwebplayersdk-nextupcard-button',
+                        'recap' : '',
+                        'timer' : '//*[@id="dv-web-player"]/div/div[1]/div/div/div[2]/div/div/div/div'
+                    }
+                };
+
+var services = {'watch': selectors['netflix'], 'player': selectors['hbomax'], 'detail': selectors['primevideo']};
 
 // https://stackoverflow.com/questions/41985502/how-to-interact-with-netflix-cadmium-video-player-on-the-client
 function launchBingeWatchPRO(url) {
     console.log('launchBingeWatchPRO called');
     var url = url.split("/");
-
-    if (url[1] == "watch" || url[1] == "episode") {
+    var service = url[1];
+    if (service in services) {
         var checkExist = setInterval(function () {
-            if (document.evaluate('//*/video', document).iterateNext() !== null) {
+            if (document.evaluate(services[service]['video'], document).iterateNext() !== null) {
                 clearInterval(checkExist);
-                createWorkingArea(url[1]);
-                var video = document.evaluate('//*/video', document).iterateNext();
+                createWorkingArea(services[service]['timer']);
+                var video = document.evaluate(services[service]['video'], document).iterateNext();
                 video.setAttribute("timeupdate", true);
                 video.addEventListener("timeupdate",
                     function (e) {
                         displayTime(video.currentTime, video.duration);
                         console.log('tick');
                         // skip intro
-                        if (document.querySelectorAll('[data-uia="player-skip-intro"]').length && settings['settings-skip'] == 'true') {
-                            document.querySelectorAll('[data-uia="player-skip-intro"]')[0].click();
-                            console.log('click player-skip-intro');
-                        } 
-
-                        // go to next episode without waiting
-                        if (document.querySelectorAll('[data-uia="next-episode-seamless-button-draining"]').length && settings['settings-next'] == 'true') {
-                            document.querySelectorAll('[data-uia="next-episode-seamless-button-draining"]')[0].click();
-                            console.log('click next-episode-seamless-button');
+                        if ('' !=  services[service]['intro']){
+                            if (document.querySelectorAll(services[service]['intro']).length && settings['settings-skip'] == 'true') {
+                                document.querySelectorAll(services[service]['intro'])[0].click();
+                                console.log('click skip-intro');
+                            } 
                         }
 
+                        // go to next episode without waiting
+                        if ('' !=  services[service]['next']){
+                            if (document.querySelectorAll(services[service]['next']).length && settings['settings-next'] == 'true') {
+                                document.querySelectorAll(services[service]['next'])[0].click();
+                                console.log('click next-episode');
+                            }
+                        }
                         // skip recap
-                        if (document.querySelectorAll('[data-uia="player-skip-preplay"]').length && settings['settings-recap'] == 'true') {
-                            document.querySelectorAll('[data-uia="player-skip-preplay"]')[0].click();
-                            console.log('click player-skip-preplay');
+                        if ('' !=  services[service]['recap']){
+                            if (document.querySelectorAll(services[service]['recap']).length && settings['settings-recap'] == 'true') {
+                                document.querySelectorAll(services[service]['recap'])[0].click();
+                                console.log('click skip-recap');
+                            }
                         }
                     }
                 );
@@ -127,7 +156,7 @@ var checkExist = setInterval(function () {
         return;
     }
 
-    if (currentVideo != tempUrl || !document.querySelector('video').hasAttribute('timeupdate')) {
+    if (currentVideo != tempUrl) {
         currentVideo = tempUrl;
         launchBingeWatchPRO(currentVideo);
         return;
