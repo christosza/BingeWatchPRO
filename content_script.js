@@ -1,5 +1,5 @@
 // no debug outputs
-console.log = () => {};
+//console.log = () => {};
 
 var settings = {};
 var currentVideo = null;
@@ -23,7 +23,7 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
 // https://stackoverflow.com/a/13368349
 function formatTime(s) {
     seconds = Math.floor(s),
-        hours = Math.floor(seconds / 3600);
+    hours = Math.floor(seconds / 3600);
     seconds -= hours * 3600;
     minutes = Math.floor(seconds / 60);
     seconds -= minutes * 60;
@@ -83,21 +83,24 @@ var selectors = {
                         'intro' : '[data-uia="player-skip-intro"]',
                         'next'  : '[data-uia="next-episode-seamless-button-draining"]',
                         'recap' : '[data-uia="player-skip-preplay"]',
-                        'timer' : '//*[@class="watch-video"]'
+                        'timer' : '//*[@class="watch-video"]',
+                        'promo' : '',
                     },
                     'hbomax' : {
                         'video' : '//*/video',
                         'intro' : '[data-testid="SkipButton"]',
                         'next'  : '[data-testid="UpNextButton"]',
                         'recap' : '',
-                        'timer' : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]'
+                        'timer' : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]',
+                        'promo' : '',
                     },
                     'primevideo' : {
                         'video' : '//*/video',
                         'intro' : '.atvwebplayersdk-skipelement-button',
                         'next'  : '.atvwebplayersdk-nextupcard-button',
                         'recap' : '',
-                        'timer' : '//*[@id="dv-web-player"]/div/div[1]/div/div/div[2]/div/div/div/div'
+                        'timer' : '//*[@id="dv-web-player"]/div/div[1]/div/div/div[2]/div/div/div/div',
+                        'promo' : '.fu4rd6c.f1cw2swo',
                     }
                 };
 
@@ -139,6 +142,13 @@ function launchBingeWatchPRO(url) {
                             if (document.querySelectorAll(services[service]['recap']).length && settings['settings-recap'] == 'true') {
                                 document.querySelectorAll(services[service]['recap'])[0].click();
                                 console.log('click skip-recap');
+                            }
+                        }
+                        // skip promo
+                        if ('' !=  services[service]['promo']){
+                            if (document.querySelectorAll(services[service]['promo']).length && settings['settings-promo'] == 'true') {
+                                document.querySelectorAll(services[service]['promo'])[0].click();
+                                console.log('click skip-promo');
                             }
                         }
                     }
