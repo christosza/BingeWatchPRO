@@ -91,7 +91,7 @@ var selectors = {
                         'intro' : '[data-testid="SkipButton"]',
                         'next'  : '[data-testid="UpNextButton"]',
                         'recap' : '',
-                        'timer' : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]',
+                        'timer' : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]/div[2]/div/div/div/div[1]/div',
                         'promo' : '',
                     },
                     'primevideo' : {
