@@ -13,8 +13,8 @@ Watch them hard.
 5. Click the "load unpacked" button and select the repository directory.
 
 ## Supported options
-||elapsed time|skip intro|skip recap|skip promo|next episode|
-| --- | --- | --- | --- | --- | --- |
-|Netflix|✔|✔|✔|✖|✔|
-|HBO Max|✔|✔|✖|✖|✔|
-|Amazon Prime|✔|✔|✖|✔|✔|
+||elapsed time|skip intro|skip preplay|skip recap|skip promo|next episode|
+| --- | --- | --- | --- | --- | --- | --- |
+|Netflix|✔|✔|✔|✔|n/a|✔|
+|HBO Max|✔|✔|✖|✖|n/a|✔|
+|Amazon Prime|✔|✔|✖|✖|✔|✔|

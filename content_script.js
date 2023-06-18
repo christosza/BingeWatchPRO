@@ -79,28 +79,31 @@ function displayTime(currentTime, videoLength) {
 
 var selectors = {
                     'netflix': {
-                        'video' : '//*/video',
-                        'intro' : '[data-uia="player-skip-intro"]',
-                        'next'  : '[data-uia="next-episode-seamless-button-draining"]',
-                        'recap' : '[data-uia="player-skip-preplay"]',
-                        'timer' : '//*[@class="watch-video"]',
-                        'promo' : '',
+                        'video'   : '//*/video',
+                        'intro'   : '[data-uia="player-skip-intro"]',
+                        'next'    : '[data-uia="next-episode-seamless-button-draining"]',
+                        'preplay' : '[data-uia="player-skip-preplay"]',
+                        'recap'   : '[data-uia="player-skip-recap"]',
+                        'timer'   : '//*[@class="watch-video"]',
+                        'promo'   : '',
                     },
                     'hbomax' : {
-                        'video' : '//*/video',
-                        'intro' : '[data-testid="SkipButton"]',
-                        'next'  : '[data-testid="UpNextButton"]',
-                        'recap' : '',
-                        'timer' : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]/div[2]/div/div/div/div[1]/div',
-                        'promo' : '',
+                        'video'   : '//*/video',
+                        'intro'   : '[data-testid="SkipButton"]',
+                        'next'    : '[data-testid="UpNextButton"]',
+                        'preplay' : '',
+                        'recap'   : '',
+                        'timer'   : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]/div[2]/div/div/div/div[1]/div',
+                        'promo'   : '',
                     },
                     'primevideo' : {
-                        'video' : '//*/video',
-                        'intro' : '.atvwebplayersdk-skipelement-button',
-                        'next'  : '.atvwebplayersdk-nextupcard-button',
-                        'recap' : '',
-                        'timer' : '//*[@id="dv-web-player"]/div/div[1]/div/div/div[2]/div/div/div/div',
-                        'promo' : '.fu4rd6c.f1cw2swo',
+                        'video'   : '//*/video',
+                        'intro'   : '.atvwebplayersdk-skipelement-button',
+                        'next'    : '.atvwebplayersdk-nextupcard-button',
+                        'preplay' : '',
+                        'recap'   : '',
+                        'timer'   : '//*[@id="dv-web-player"]/div/div[1]/div/div/div[2]/div/div/div/div',
+                        'promo'   : '.fu4rd6c.f1cw2swo',
                     }
                 };
 
@@ -137,6 +140,14 @@ function launchBingeWatchPRO(url) {
                                 console.log('click next-episode');
                             }
                         }
+                        // skip preplay
+                        if ('' !=  services[service]['preplay']){
+                            if (document.querySelectorAll(services[service]['preplay']).length && settings['settings-preplay'] == 'true') {
+                                document.querySelectorAll(services[service]['preplay'])[0].click();
+                                console.log('click skip-preplay');
+                            }
+                        }
+
                         // skip recap
                         if ('' !=  services[service]['recap']){
                             if (document.querySelectorAll(services[service]['recap']).length && settings['settings-recap'] == 'true') {
