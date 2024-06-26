@@ -170,16 +170,22 @@ function launchBingeWatchPRO(url) {
 }
 
 
-var checkExist = setInterval(function () {
-    var tempUrl = window.location.pathname;
-    
-    if (!document.querySelector('video')) {
+var healthCheck = setInterval(function () {
+    var reinit = 0;
+    var tempUrl = window.location.pathname;    
+    var video = document.querySelector('video');
+    if (video == null) {
         return;
+    } else {
+        if (video.hasAttribute("timeupdate") == false) {
+            reinit = 1;
+        } else {
+            reinit = 0;
+        }
     }
 
-    if (currentVideo != tempUrl) {
+    if (currentVideo != tempUrl || reinit == 1) {
         currentVideo = tempUrl;
         launchBingeWatchPRO(currentVideo);
-        return;
     }
 }, 1000);
