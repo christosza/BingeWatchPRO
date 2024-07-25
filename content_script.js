@@ -93,7 +93,7 @@ var selectors = {
                         'next'    : '[data-testid="UpNextButton"]',
                         'preplay' : '',
                         'recap'   : '',
-                        'timer'   : '//*[@id="root"]/div[1]/div/div[3]/div/div/div/div[1]/div/div[2]/div[2]/div/div/div/div[1]/div',
+                        'timer'   : '//*[@id="layer-root-player-screen"]/div/div',
                         'promo'   : '',
                     },
                     'primevideo' : {
@@ -107,7 +107,7 @@ var selectors = {
                     }
                 };
 
-var services = {'watch': selectors['netflix'], 'player': selectors['hbomax'], 'detail': selectors['primevideo']};
+var services = {'watch': selectors['netflix'], 'video': selectors['hbomax'], 'detail': selectors['primevideo']};
 
 // https://stackoverflow.com/questions/41985502/how-to-interact-with-netflix-cadmium-video-player-on-the-client
 function launchBingeWatchPRO(url) {

@@ -19,7 +19,7 @@
         "default_popup": "popup.html"
     },
     "content_scripts": [{
-        "matches": ["https://www.netflix.com/*", "https://play.hbomax.com/*", "https://www.primevideo.com/detail/*"],
+        "matches": ["https://www.netflix.com/*", "https://play.max.com/video/watch/*", "https://www.primevideo.com/detail/*"],
         "css": ["content_css.css"],
         "js": ["content_script.js"]
     }],
